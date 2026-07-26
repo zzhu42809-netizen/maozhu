@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>毛猪记账本</title>
+<meta name="description" content="毛猪宰猪记账，客户出货管理，日常花销统计">
+<meta name="theme-color" content="#2D7A4F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="猪肉记账">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f9f8f5;
+  --border:#e8e4dc;--border2:#d0ccc2;
+  --text:#1a1a18;--text2:#5a5854;--text3:#9a9890;
+  --green:#2d7a4f;--green-bg:#eaf4ef;--green-light:#c8e6d4;
+  --red:#c0392b;--red-bg:#fdecea;
+  --amber:#b5620a;--amber-bg:#fef3e2;--amber-bdr:#f0d090;
+  --blue:#185fa5;--blue-bg:#e8f1fb;
+  --r:10px;
+}
+body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0}
+.nav-title{font-size:17px;font-weight:700}
+.nav-month{display:flex;align-items:center;gap:4px}
+.nav-month button{background:none;border:none;font-size:22px;color:var(--text2);cursor:pointer;padding:0 3px;line-height:1}
+.nav-month span{font-size:15px;font-weight:600;min-width:82px;text-align:center}
+.nav-tabs{display:flex;padding:0 6px;margin-top:2px;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 10px;font-size:13px;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.active{color:var(--green);border-bottom-color:var(--green);font-weight:600}
+.page{display:none;padding:14px}
+.page.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 12px}
+.sl{font-size:12px;color:var(--text3);margin-bottom:3px}
+.sv{font-size:20px;font-weight:700}
+.ss{font-size:11px;color:var(--text3);margin-top:2px}
+.g{color:var(--green)}.r{color:var(--red)}.a{color:var(--amber)}.b{color:var(--blue)}
+.bigs{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.bigs.green{background:var(--green-bg);border-color:var(--green-light)}
+.bigs.red{background:var(--red-bg);border-color:#f5b8b0}
+.bigs.amber{background:var(--amber-bg);border-color:var(--amber-bdr)}
+.bl{font-size:14px;color:var(--text2)}.bls{font-size:11px;color:var(--text3);margin-top:2px}.bv{font-size:22px;font-weight:700}
+.sec{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px}
+.sct{font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase}
+.btn-add{background:var(--green);color:#fff;border:none;border-radius:20px;padding:6px 13px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-add:active{opacity:.85}
+.rec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;cursor:pointer}
+.rec:active{background:var(--surface2)}
+.rr{display:flex;justify-content:space-between;align-items:baseline}
+.rd{font-size:12px;color:var(--text3)}.rn{font-size:15px;font-weight:500}.ra{font-size:16px;font-weight:700}
+.rdet{font-size:12px;color:var(--text3);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+.tag{display:inline-block;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:500}
+.tag.g{background:var(--green-bg);color:var(--green)}.tag.r{background:var(--red-bg);color:var(--red)}
+.tag.a{background:var(--amber-bg);color:var(--amber)}.tag.gray{background:#f0ede6;color:var(--text3)}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cav{width:42px;height:42px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:var(--green);flex-shrink:0}
+.ci{flex:1;margin:0 10px}.cn{font-size:16px;font-weight:600}.ca{font-size:12px;color:var(--text3)}
+.cst{display:flex;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.csv{flex:1;text-align:center}.csn{font-size:15px;font-weight:600}.csl{font-size:11px;color:var(--text3);margin-top:1px}
+.cact{display:flex;gap:8px;margin-top:10px}
+.bo{flex:1;background:none;border:1px solid var(--border2);border-radius:8px;padding:8px;font-size:13px;color:var(--text2);cursor:pointer;text-align:center}
+.bo:active{background:var(--surface2)}.bo.green{border-color:var(--green);color:var(--green)}
+.backbtn{display:flex;align-items:center;gap:4px;color:var(--green);font-size:14px;cursor:pointer;margin-bottom:14px;background:none;border:none;padding:0}
+.fg{margin-bottom:13px}.fl{font-size:13px;color:var(--text2);font-weight:500;margin-bottom:5px;display:block}
+.fi{width:100%;border:1.5px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:15px;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--green)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fs{width:100%;border:1.5px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:15px;background:var(--surface);color:var(--text);outline:none;-webkit-appearance:none;appearance:none}
+.cb{background:var(--green-bg);border:1px solid var(--green-light);border-radius:8px;padding:12px;margin:10px 0}
+.cr{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);padding:3px 0}
+.cbig{font-weight:700;color:var(--green);font-size:15px}.cred{font-weight:700;color:var(--red);font-size:15px}
+.btn{width:100%;padding:13px;border:none;border-radius:var(--r);font-size:16px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn.primary{background:var(--green);color:#fff}.btn.primary:active{opacity:.85}
+.btn.danger{background:none;color:var(--red);border:1.5px solid var(--red);border-radius:var(--r);padding:10px;font-size:14px;width:100%;margin-top:8px;cursor:pointer}
+.btn.exp-dl{background:var(--blue-bg);color:var(--blue);border:1px solid #c0d8f5;border-radius:8px;padding:9px 14px;font-size:14px;font-weight:600;cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:200;display:flex;align-items:flex-end}
+.overlay.hidden{display:none}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;padding:20px 16px 36px;width:100%;max-height:92vh;overflow-y:auto}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mt2{font-size:18px;font-weight:700}
+.mx{background:var(--surface2);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--text3)}
+.empty{text-align:center;padding:40px 24px;color:var(--text3)}
+.ei{font-size:44px;margin-bottom:10px}.et{font-size:14px;line-height:1.6}
+.bdt{width:100%;font-size:13px;border-collapse:collapse}.bdt td{padding:5px 0}
+.bdt tr.sub td{border-top:1px solid var(--border);padding-top:8px;font-weight:600}
+.bdt tr.tot td{border-top:2px solid var(--border2);padding-top:8px;font-weight:700;font-size:15px}
+.note{background:var(--amber-bg);border:1px solid var(--amber-bdr);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--amber);margin-bottom:12px}
+.dvd{height:1px;background:var(--border);margin:10px 0}
+.exprow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
+.exprow:last-child{border-bottom:none}
+.expl{display:flex;align-items:center;gap:10px}
+.expico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.expname{font-size:14px;font-weight:500}.expmeta{font-size:11px;color:var(--text3);margin-top:1px}
+.expamt{font-size:15px;font-weight:700;color:var(--red)}
+.tr2{text-align:right}.bold{font-weight:600}.sm{font-size:13px}.mt4{margin-top:4px}.mt8{margin-top:8px}.muted{color:var(--text3)}
+.exp-row-dl{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+.exp-row-dl:not(:last-child){border-bottom:1px solid var(--border)}
+.exp-row-info .title{font-size:14px;font-weight:600}
+.exp-row-info .sub{font-size:12px;color:var(--text3);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="nav-top">
+    <div class="nav-title">🐷 毛猪记账本</div>
+    <div class="nav-month">
+      <button onclick="changeMonth(-1)">‹</button>
+      <span id="mlabel"></span>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <div class="tab active" onclick="showTab('dashboard')">总览</div>
+    <div class="tab" onclick="showTab('slaughter')">宰猪</div>
+    <div class="tab" onclick="showTab('customers')">客户</div>
+    <div class="tab" onclick="showTab('expenses')">花销</div>
+    <div class="tab" onclick="showTab('export')">导出</div>
+  </div>
+</div>
+
+<div id="tab-dashboard" class="page active"><div id="db-body"></div></div>
+<div id="tab-slaughter" class="page">
+  <div class="sec"><span class="sct">宰猪记录</span><button class="btn-add" onclick="openSM()">＋ 新增</button></div>
+  <div id="sl-list"></div>
+</div>
+<div id="tab-customers" class="page">
+  <div id="cust-list-view">
+    <div class="sec"><span class="sct">客户列表</span><button class="btn-add" onclick="openACM()">＋ 新增客户</button></div>
+    <div id="cust-list"></div>
+  </div>
+  <div id="cust-det-view" style="display:none">
+    <button class="backbtn" onclick="backToCL()">‹ 客户列表</button>
+    <div id="cust-det-body"></div>
+  </div>
+</div>
+<div id="tab-expenses" class="page">
+  <div class="sec"><span class="sct">日常花销</span><button class="btn-add" onclick="openEM()">＋ 新增</button></div>
+  <div id="exp-body"></div>
+</div>
+<div id="tab-export" class="page">
+
+
+  <!-- iOS install hint -->
+  <div id="ios-install-hint" class="card" style="display:none;border-color:#c0d8f5;background:var(--blue-bg);margin-bottom:10px">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="font-size:22px;flex-shrink:0">📱</div>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--blue);margin-bottom:4px">添加到手机桌面</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">
+          <strong>苹果：</strong>Safari 底部点分享图标 → 「添加到主屏幕」<br>
+          <strong>安卓：</strong>Chrome 右上角菜单 → 「添加到主屏幕」
+        </div>
+      </div>
+      <button onclick="document.getElementById('ios-install-hint').style.display='none'" 
+              style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;flex-shrink:0;padding:0">✕</button>
+    </div>
+  </div>
+
+  <!-- BACKUP SECTION -->
+  <div class="sec"><span class="sct">🔒 数据备份与恢复</span></div>
+  <div class="card" style="border-color:var(--amber-bdr);background:var(--amber-bg)">
+    <div style="font-size:13px;color:var(--amber);line-height:1.7;margin-bottom:12px">
+      ⚠️ 数据保存在手机浏览器本地，清除浏览器缓存、换手机或换浏览器都会导致数据丢失。<strong>强烈建议每天备份一次</strong>，把备份文件发到微信收藏或存入云盘。
+    </div>
+    <div id="backup-status" style="font-size:12px;color:var(--text3);margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="backupData()" style="flex:1;background:var(--amber);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer">⬇ 下载备份文件</button>
+      <label style="flex:1;background:var(--surface);color:var(--amber);border:1.5px solid var(--amber-bdr);border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center">
+        ⬆ 从备份恢复
+        <input type="file" id="restore-input" accept=".json" onchange="restoreData(event)" style="display:none">
+      </label>
+    </div>
+  </div>
+
+  <!-- EXPORT SECTION -->
+  <div class="sec"><span class="sct">📊 导出 Excel 表格</span></div>
+  <div class="card" style="padding:10px 14px;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:14px;color:var(--text2)">导出月份</span>
+      <span id="exp-month-lbl" style="font-size:15px;font-weight:600"></span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:3px">与左上角月份一致，切换后同步更新</div>
+  </div>
+  <div class="card">
+    <div class="exp-row-dl">
+      <div class="exp-row-info"><div class="title">🐷 宰猪记录</div><div class="sub">日期/头数/宰前重/宰后重/成数/利润</div></div>
+      <button class="btn exp-dl" onclick="exportSlaughter()">下载</button>
+    </div>
+    <div class="exp-row-dl">
+      <div class="exp-row-info"><div class="title">📦 客户出货汇总</div><div class="sub">所有客户本月出货，含客户名</div></div>
+      <button class="btn exp-dl" onclick="exportAllSales()">下载</button>
+    </div>
+    <div id="exp-per-cust"></div>
+    <div class="exp-row-dl" style="border-top:1px solid var(--border);margin-top:0">
+      <div class="exp-row-info"><div class="title">💸 日常花销</div><div class="sub">日期/类别/描述/金额</div></div>
+      <button class="btn exp-dl" onclick="exportExpenses()">下载</button>
+    </div>
+  </div>
+  <div class="sec"><span class="sct">全量导出</span></div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px">导出所有月份完整数据（含所有客户独立 Sheet）</div>
+    <button class="btn exp-dl" style="width:100%;padding:12px" onclick="exportAll()">📥 导出全部数据 (.xlsx)</button>
+  </div>
+</div>
+
+<!-- BACKUP REMINDER MODAL -->
+<div id="m-backup" class="overlay hidden"><div class="modal" style="padding-bottom:28px">
+  <div class="mh"><span class="mt2">⚠️ 记得备份数据</span><button class="mx" onclick="closeM('m-backup')">✕</button></div>
+  <div style="font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:16px">
+    你已经 <span id="days-since-backup" style="font-weight:700;color:var(--amber)"></span> 没有备份数据了。<br>
+    如果浏览器缓存被清除，所有记录将永久丢失。<br><br>
+    建议：下载备份文件后发到<strong>微信收藏</strong>或存入<strong>云盘</strong>。
+  </div>
+  <button onclick="backupData();closeM('m-backup')" style="width:100%;background:var(--amber);color:#fff;border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:8px">⬇ 立即备份</button>
+  <button onclick="closeM('m-backup')" style="width:100%;background:none;color:var(--text3);border:none;padding:10px;font-size:14px;cursor:pointer">稍后再说</button>
+</div></div>
+
+<!-- RESTORE CONFIRM MODAL -->
+<div id="m-restore" class="overlay hidden"><div class="modal" style="padding-bottom:28px">
+  <div class="mh"><span class="mt2">⬆ 确认恢复数据</span><button class="mx" onclick="closeM('m-restore')">✕</button></div>
+  <div id="restore-info" style="font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:16px"></div>
+  <div style="background:var(--red-bg);border:1px solid #f5b8b0;border-radius:8px;padding:10px 12px;font-size:13px;color:var(--red);margin-bottom:16px">
+    ⚠️ 恢复操作会<strong>覆盖</strong>当前所有数据，此操作不可撤销。
+  </div>
+  <button id="restore-confirm-btn" onclick="confirmRestore()" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:8px">确认恢复</button>
+  <button onclick="closeM('m-restore')" style="width:100%;background:none;color:var(--text3);border:none;padding:10px;font-size:14px;cursor:pointer">取消</button>
+</div></div>
+
+<!-- SLAUGHTER MODAL -->
+<div id="m-sl" class="overlay hidden"><div class="modal">
+  <div class="mh"><span class="mt2" id="sl-title">新增宰猪记录</span><button class="mx" onclick="closeM('m-sl')">✕</button></div>
+  <div class="fg"><label class="fl">日期</label><input type="date" id="s-date" class="fi"></div>
+  <div class="fr">
+    <div class="fg"><label class="fl">头数</label><input type="number" id="s-count" class="fi" placeholder="0" oninput="calcS()"></div>
+    <div class="fg"><label class="fl">单价（元/斤）</label><input type="number" id="s-price" class="fi" placeholder="0.00" step="0.01" oninput="calcS()"></div>
+  </div>
+  <div class="fg"><label class="fl">生猪重量（斤）— 宰前毛重</label><input type="number" id="s-live" class="fi" placeholder="0" oninput="calcS()"></div>
+  <div class="fg"><label class="fl">边肉重量（斤）— 宰后净重</label><input type="number" id="s-meat" class="fi" placeholder="0" oninput="calcS()"></div>
+  <div class="fg"><label class="fl">客户付款总额（元）</label><input type="number" id="s-rev" class="fi" placeholder="0.00" step="0.01" oninput="calcS()"></div>
+  <div class="note">💡 成数 = 边肉 ÷ 生猪重量　利润 = 付款额 − 进猪成本</div>
+  <div id="s-prev" class="cb"></div>
+  <div class="fg"><label class="fl">备注</label><input type="text" id="s-note" class="fi" placeholder="可选"></div>
+  <button class="btn primary" onclick="saveSL()">保存</button>
+  <button class="btn danger" id="s-del" onclick="delSL()" style="display:none">删除这条记录</button>
+</div></div>
+
+<!-- ADD CUSTOMER MODAL -->
+<div id="m-ac" class="overlay hidden"><div class="modal">
+  <div class="mh"><span class="mt2" id="ac-title">新增客户</span><button class="mx" onclick="closeM('m-ac')">✕</button></div>
+  <div class="fg"><label class="fl">客户名称（常用名）</label><input type="text" id="nc-name" class="fi" placeholder="例：建文爸"></div>
+  <div class="fg"><label class="fl">备注 / 全名（可选）</label><input type="text" id="nc-alias" class="fi" placeholder="例：李建文的爸爸，菜市场A档"></div>
+  <div class="fg"><label class="fl">联系电话（可选）</label><input type="tel" id="nc-phone" class="fi" placeholder=""></div>
+  <button class="btn primary" onclick="saveAC()">保存</button>
+  <button class="btn danger" id="nc-del" onclick="delC()" style="display:none">删除此客户（及其出货记录）</button>
+</div></div>
+
+<!-- SALE MODAL -->
+<div id="m-sale" class="overlay hidden"><div class="modal">
+  <div class="mh"><span class="mt2" id="sale-title">新增出货</span><button class="mx" onclick="closeM('m-sale')">✕</button></div>
+  <div style="background:var(--green-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:var(--green);font-weight:600">客户：<span id="sale-cn"></span></div>
+  <div class="fg"><label class="fl">日期</label><input type="date" id="sale-date" class="fi"></div>
+  <div class="fg"><label class="fl">品名</label>
+    <select id="sale-type" class="fs"><option value="边肉">边肉</option><option value="生猪">生猪</option><option value="其他">其他</option></select>
+  </div>
+  <div class="fr">
+    <div class="fg"><label class="fl">头数</label><input type="number" id="sale-cnt" class="fi" placeholder="0" step="0.5" oninput="calcSale()"></div>
+    <div class="fg"><label class="fl">重量（斤）</label><input type="number" id="sale-wt" class="fi" placeholder="0" oninput="calcSale()"></div>
+  </div>
+  <div class="fr">
+    <div class="fg"><label class="fl">单价（元/斤）</label><input type="number" id="sale-pr" class="fi" placeholder="0.00" step="0.01" oninput="calcSale()"></div>
+    <div class="fg"><label class="fl">加工费（元）</label><input type="number" id="sale-proc" class="fi" placeholder="0" step="0.01" oninput="calcSale()"></div>
+  </div>
+  <div class="fg"><label class="fl">减废肉（斤）</label><input type="number" id="sale-waste" class="fi" placeholder="0" step="0.01" oninput="calcSale()"></div>
+  <div class="fg"><label class="fl">结款状态</label>
+    <select id="sale-st" class="fs"><option value="paid">已结清</option><option value="pending">未结清</option></select>
+  </div>
+  <div id="sale-prev" class="cb"></div>
+  <div class="fg"><label class="fl">备注</label><input type="text" id="sale-note" class="fi" placeholder="可选"></div>
+  <button class="btn primary" onclick="saveSale()">保存</button>
+  <button class="btn danger" id="sale-del" onclick="delSale()" style="display:none">删除这条记录</button>
+</div></div>
+
+<!-- EXPENSE MODAL -->
+<div id="m-exp" class="overlay hidden"><div class="modal">
+  <div class="mh"><span class="mt2" id="exp-title">新增花销</span><button class="mx" onclick="closeM('m-exp')">✕</button></div>
+  <div class="fg"><label class="fl">日期</label><input type="date" id="e-date" class="fi"></div>
+  <div class="fg"><label class="fl">类别</label>
+    <select id="e-cat" class="fs">
+      <option value="运费">🚛 运费</option><option value="工资">👷 工资</option>
+      <option value="水电">💡 水电</option><option value="饲料">🌾 饲料</option>
+      <option value="维修">🔧 维修</option><option value="餐饮">🍜 餐饮</option><option value="其他">📦 其他</option>
+    </select>
+  </div>
+  <div class="fg"><label class="fl">描述</label><input type="text" id="e-desc" class="fi" placeholder="例：司机运费"></div>
+  <div class="fg"><label class="fl">金额（元）</label><input type="number" id="e-amt" class="fi" placeholder="0.00" step="0.01"></div>
+  <button class="btn primary" onclick="saveExp()">保存</button>
+  <button class="btn danger" id="e-del" onclick="delExp()" style="display:none">删除</button>
+</div></div>
+
+<script>
+let DB = JSON.parse(localStorage.getItem('pig_v3')||'{"sl":[],"cu":[],"sa":[],"ex":[]}');
+if(!DB.sl)DB.sl=[];if(!DB.cu)DB.cu=[];if(!DB.sa)DB.sa=[];if(!DB.ex)DB.ex=[];
+let curM = new Date(); curM.setDate(1);
+let eSL=null,eCU=null,eSA=null,eEX=null,saleCustId=null,curCustId=null;
+
+function save(){localStorage.setItem('pig_v3',JSON.stringify(DB));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function tod(){return new Date().toISOString().slice(0,10);}
+function ms(){return curM.getFullYear()+'-'+String(curM.getMonth()+1).padStart(2,'0');}
+function f2(n){return(parseFloat(n)||0).toFixed(2);}
+function fN(n,d){return(parseFloat(n)||0).toFixed(d||2);}
+function inM(r){return r.date&&r.date.startsWith(ms());}
+function openM(id){document.getElementById(id).classList.remove('hidden');}
+function closeM(id){document.getElementById(id).classList.add('hidden');}
+
+function changeMonth(d){curM.setMonth(curM.getMonth()+d);updateLabels();renderAll();}
+function updateLabels(){
+  const s=curM.getFullYear()+'年'+(curM.getMonth()+1)+'月';
+  document.getElementById('mlabel').textContent=s;
+  const el=document.getElementById('exp-month-lbl');if(el)el.textContent=s;
+}
+
+const TABS=['dashboard','slaughter','customers','expenses','export'];
+function showTab(n){
+  TABS.forEach((t,i)=>{
+    document.querySelectorAll('.tab')[i].classList.toggle('active',t===n);
+    document.getElementById('tab-'+t).classList.toggle('active',t===n);
+  });
+  if(n==='customers'){backToCL();renderCL();}
+  if(n==='export')renderExport();
+}
+
+function renderAll(){renderDB();renderSL();renderCL();renderExp();renderExport();}
+
+// DASHBOARD
+function renderDB(){
+  const sl=DB.sl.filter(inM),sa=DB.sa.filter(inM),ex=DB.ex.filter(inM);
+  const live=sl.reduce((s,r)=>s+(+r.live||0),0);
+  const meat=sl.reduce((s,r)=>s+(+r.meat||0),0);
+  const cost=sl.reduce((s,r)=>s+(+r.cost||0),0);
+  const rev=sl.reduce((s,r)=>s+(+r.revenue||0),0);
+  const slP=sl.reduce((s,r)=>s+(+r.profit||0),0);
+  const pigC=sl.reduce((s,r)=>s+(+r.count||0),0);
+  const ratio=live>0?meat/live*100:0;
+  const pend=sa.filter(r=>r.status!=='paid').reduce((s,r)=>s+(+r.amount||0),0);
+  const expT=ex.reduce((s,r)=>s+(+r.amount||0),0);
+  const net=slP-expT;
+  let h='';
+  h+=`<div class="bigs ${net>=0?'green':'red'}"><div><div class="bl">本月最终净利润</div><div class="bls">毛利 − 日常花销</div></div><div class="bv ${net>=0?'g':'r'}">¥${f2(net)}</div></div>`;
+  h+=`<div class="sg">
+    <div class="sc"><div class="sl">宰猪毛利润</div><div class="sv g">¥${f2(slP)}</div><div class="ss">${pigC}头猪</div></div>
+    <div class="sc"><div class="sl">日常花销</div><div class="sv r">¥${f2(expT)}</div><div class="ss">${ex.length}笔</div></div>
+    <div class="sc"><div class="sl">宰前总重</div><div class="sv">${fN(live,1)}斤</div><div class="ss">成本¥${f2(cost)}</div></div>
+    <div class="sc"><div class="sl">宰后净重</div><div class="sv">${fN(meat,1)}斤</div><div class="ss">平均成数${fN(ratio,1)}%</div></div>
+  </div>`;
+  if(pend>0)h+=`<div class="bigs amber"><div><div class="bl" style="color:var(--amber)">客户未结款</div><div class="bls">待收账款</div></div><div class="bv a">¥${f2(pend)}</div></div>`;
+  h+=`<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:10px">利润明细</div>
+    <table class="bdt">
+      <tr><td>出肉总收入</td><td class="tr2">¥${f2(rev)}</td></tr>
+      <tr><td>减：进猪成本</td><td class="tr2 r">−¥${f2(cost)}</td></tr>
+      <tr class="sub"><td>= 宰猪毛利润</td><td class="tr2 g">¥${f2(slP)}</td></tr>
+      <tr><td style="padding-top:8px">减：日常花销</td><td class="tr2 r" style="padding-top:8px">−¥${f2(expT)}</td></tr>
+      <tr class="tot"><td>= 月净利润</td><td class="tr2 ${net>=0?'g':'r'}">¥${f2(net)}</td></tr>
+    </table></div>`;
+  const rec=[...DB.sl].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);
+  if(rec.length){
+    h+=`<div class="sec"><span class="sct">最近宰猪</span></div>`;
+    for(const r of rec){const p=+r.profit||0;const rt=r.live>0?(r.meat/r.live*100).toFixed(1):'—';
+      h+=`<div class="rec" onclick="showTab('slaughter');openSM('${r.id}')"><div class="rr"><span class="rd">${r.date}</span><span class="ra ${p>=0?'g':'r'}">¥${f2(p)}</span></div>
+        <div class="rr mt4"><span class="sm bold">${r.count}头</span><span class="tag g">成数 ${rt}%</span></div>
+        <div class="rdet"><span>毛重 ${r.live}斤</span><span>净重 ${r.meat}斤</span><span>¥${r.price}/斤</span></div></div>`;
+    }
+  }
+  document.getElementById('db-body').innerHTML=h;
+}
+
+// SLAUGHTER
+function renderSL(){
+  const list=DB.sl.filter(inM).sort((a,b)=>b.date.localeCompare(a.date));
+  let h='';
+  if(!list.length){h=`<div class="empty"><div class="ei">🐷</div><div class="et">本月暂无宰猪记录<br>点右上角新增</div></div>`;}
+  else for(const r of list){const p=+r.profit||0;const rt=r.live>0?(+r.meat/+r.live*100).toFixed(1):'—';
+    h+=`<div class="rec" onclick="openSM('${r.id}')"><div class="rr"><span class="rd">${r.date}</span><span class="ra ${p>=0?'g':'r'}">¥${f2(p)}</span></div>
+      <div class="rr mt4"><span class="sm bold">${r.count}头生猪</span><span class="tag g">成数 ${rt}%</span></div>
+      <div class="rdet"><span>毛重 ${r.live}斤</span><span>净重 ${r.meat}斤</span><span>单价 ¥${r.price}/斤</span>${r.note?'<span>'+r.note+'</span>':''}</div></div>`;
+  }
+  document.getElementById('sl-list').innerHTML=h;
+}
+function openSM(id){
+  eSL=id||null;
+  if(id){const r=DB.sl.find(x=>x.id===id);
+    document.getElementById('sl-title').textContent='编辑宰猪记录';
+    document.getElementById('s-date').value=r.date;document.getElementById('s-count').value=r.count;
+    document.getElementById('s-price').value=r.price;document.getElementById('s-live').value=r.live;
+    document.getElementById('s-meat').value=r.meat;document.getElementById('s-rev').value=r.revenue;
+    document.getElementById('s-note').value=r.note||'';document.getElementById('s-del').style.display='block';
+  }else{document.getElementById('sl-title').textContent='新增宰猪记录';
+    document.getElementById('s-date').value=tod();
+    ['s-count','s-price','s-live','s-meat','s-rev','s-note'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('s-del').style.display='none';
+  }
+  calcS();openM('m-sl');
+}
+function calcS(){
+  const live=parseFloat(document.getElementById('s-live').value)||0;
+  const price=parseFloat(document.getElementById('s-price').value)||0;
+  const meat=parseFloat(document.getElementById('s-meat').value)||0;
+  const rev=parseFloat(document.getElementById('s-rev').value)||0;
+  const cost=live*price;const profit=rev-cost;const rt=live>0?meat/live*100:0;
+  document.getElementById('s-prev').innerHTML=`
+    <div class="cr"><span>进猪成本（${live}斤×¥${price}）</span><span>¥${f2(cost)}</span></div>
+    <div class="cr"><span>成数</span><span>${fN(rt,2)}%</span></div>
+    <div class="cr"><span>出肉收入</span><span>¥${f2(rev)}</span></div>
+    <div class="dvd"></div>
+    <div class="cr"><span>本批利润</span><span class="${profit>=0?'cbig':'cred'}">¥${f2(profit)}</span></div>`;
+}
+function saveSL(){
+  const date=document.getElementById('s-date').value;
+  const count=parseFloat(document.getElementById('s-count').value)||0;
+  const price=parseFloat(document.getElementById('s-price').value)||0;
+  const live=parseFloat(document.getElementById('s-live').value)||0;
+  const meat=parseFloat(document.getElementById('s-meat').value)||0;
+  const revenue=parseFloat(document.getElementById('s-rev').value)||0;
+  const note=document.getElementById('s-note').value.trim();
+  if(!date||!count||!live){alert('请填日期、头数和生猪重量');return;}
+  const cost=live*price;const profit=revenue-cost;
+  const rec={id:eSL||uid(),date,count,price,live,meat,revenue,cost,profit,note};
+  if(eSL){DB.sl[DB.sl.findIndex(x=>x.id===eSL)]=rec;}else DB.sl.push(rec);
+  save();closeM('m-sl');renderAll();
+}
+function delSL(){if(!confirm('确认删除？'))return;DB.sl=DB.sl.filter(x=>x.id!==eSL);save();closeM('m-sl');renderAll();}
+
+// CUSTOMERS
+function renderCL(){
+  const m=ms();let h='';
+  if(!DB.cu.length){h=`<div class="empty"><div class="ei">👤</div><div class="et">还没有客户<br>点右上角新增</div></div>`;}
+  else for(const c of DB.cu){
+    const sa=DB.sa.filter(s=>s.custId===c.id&&s.date.startsWith(m));
+    const tot=sa.reduce((s,r)=>s+(+r.amount||0),0);
+    const pend=sa.filter(r=>r.status!=='paid').reduce((s,r)=>s+(+r.amount||0),0);
+    const ini=c.name.slice(0,2);
+    h+=`<div class="cc">
+      <div class="ch">
+        <div class="cav">${ini}</div>
+        <div class="ci"><div class="cn">${c.name}</div>${c.alias?`<div class="ca">${c.alias}</div>`:''} ${c.phone?`<div class="ca">📞 ${c.phone}</div>`:''}</div>
+        <button class="bo" style="width:auto;padding:6px 12px" onclick="openACM('${c.id}')">编辑</button>
+      </div>
+      <div class="cst">
+        <div class="csv"><div class="csn">${sa.length}</div><div class="csl">本月笔数</div></div>
+        <div class="csv"><div class="csn g">¥${f2(tot)}</div><div class="csl">本月金额</div></div>
+        <div class="csv"><div class="csn ${pend>0?'a':'muted'}">¥${f2(pend)}</div><div class="csl">未结款</div></div>
+      </div>
+      <div class="cact">
+        <button class="bo green" onclick="openCustDet('${c.id}')">查看账单</button>
+        <button class="bo green" onclick="openSaleM(null,'${c.id}')">＋ 新增出货</button>
+      </div>
+    </div>`;
+  }
+  document.getElementById('cust-list').innerHTML=h;
+}
+function openACM(id){
+  eCU=id||null;
+  if(id){const c=DB.cu.find(x=>x.id===id);
+    document.getElementById('ac-title').textContent='编辑客户';
+    document.getElementById('nc-name').value=c.name;document.getElementById('nc-alias').value=c.alias||'';
+    document.getElementById('nc-phone').value=c.phone||'';document.getElementById('nc-del').style.display='block';
+  }else{document.getElementById('ac-title').textContent='新增客户';
+    ['nc-name','nc-alias','nc-phone'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('nc-del').style.display='none';
+  }
+  openM('m-ac');
+}
+function saveAC(){
+  const name=document.getElementById('nc-name').value.trim();
+  if(!name){alert('请填写客户名称');return;}
+  const alias=document.getElementById('nc-alias').value.trim();
+  const phone=document.getElementById('nc-phone').value.trim();
+  const rec={id:eCU||uid(),name,alias,phone};
+  if(eCU){DB.cu[DB.cu.findIndex(x=>x.id===eCU)]=rec;}else DB.cu.push(rec);
+  save();closeM('m-ac');renderCL();
+}
+function delC(){if(!confirm('确认删除客户？其出货记录也会一并删除'))return;
+  DB.cu=DB.cu.filter(x=>x.id!==eCU);DB.sa=DB.sa.filter(x=>x.custId!==eCU);
+  save();closeM('m-ac');renderCL();
+}
+function openCustDet(id){curCustId=id;document.getElementById('cust-list-view').style.display='none';document.getElementById('cust-det-view').style.display='block';renderDet();}
+function backToCL(){curCustId=null;document.getElementById('cust-list-view').style.display='block';document.getElementById('cust-det-view').style.display='none';}
+function renderDet(){
+  const c=DB.cu.find(x=>x.id===curCustId);if(!c){backToCL();return;}
+  const m=ms();
+  const sa=DB.sa.filter(s=>s.custId===c.id&&s.date.startsWith(m)).sort((a,b)=>b.date.localeCompare(a.date));
+  const tot=sa.reduce((s,r)=>s+(+r.amount||0),0);
+  const paid=sa.filter(r=>r.status==='paid').reduce((s,r)=>s+(+r.amount||0),0);
+  const pend=tot-paid;
+  let h=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div><div style="font-size:18px;font-weight:700">${c.name}</div>
+      ${c.alias?`<div style="font-size:13px;color:var(--text3)">${c.alias}</div>`:''} ${c.phone?`<div style="font-size:13px;color:var(--text3)">📞 ${c.phone}</div>`:''}</div>
+      <button class="bo green" style="white-space:nowrap;padding:7px 12px" onclick="openSaleM(null,'${c.id}')">＋ 出货</button>
+    </div>
+    <div class="cst" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <div class="csv"><div class="csn">${sa.length}</div><div class="csl">本月笔数</div></div>
+      <div class="csv"><div class="csn g">¥${f2(tot)}</div><div class="csl">本月总额</div></div>
+      <div class="csv"><div class="csn ${pend>0?'a':'muted'}">¥${f2(pend)}</div><div class="csl">未结款</div></div>
+    </div></div>`;
+  h+=`<div class="sec"><span class="sct">本月出货记录</span></div>`;
+  if(!sa.length)h+=`<div class="empty"><div class="ei">📦</div><div class="et">本月暂无出货记录</div></div>`;
+  else for(const r of sa){const ip=r.status==='paid';
+    h+=`<div class="rec" onclick="openSaleM('${r.id}','${c.id}')">
+      <div class="rr"><span class="rd">${r.date}</span><span class="tag ${ip?'g':'a'}">${ip?'已结清':'未结清'}</span></div>
+      <div class="rr mt4"><span class="sm">${r.type||'边肉'} ${r.weight}斤×¥${r.price}/斤</span><span class="ra g">¥${f2(r.amount)}</span></div>
+      <div class="rdet">${r.count?`<span>${r.count}头</span>`:''} ${+r.proc>0?`<span>加工费¥${r.proc}</span>`:''} ${+r.waste>0?`<span>减废肉${r.waste}斤</span>`:''} ${r.note?`<span>${r.note}</span>`:''}</div>
+    </div>`;
+  }
+  const allSa=DB.sa.filter(s=>s.custId===c.id);
+  if(allSa.length){
+    const aT=allSa.reduce((s,r)=>s+(+r.amount||0),0);
+    const aP=allSa.filter(r=>r.status!=='paid').reduce((s,r)=>s+(+r.amount||0),0);
+    h+=`<div class="sec"><span class="sct">历史汇总（全部月份）</span></div>
+      <div class="card"><div class="cr"><span>累计出货金额</span><span class="bold g">¥${f2(aT)}</span></div>
+      <div class="cr"><span>累计未结款</span><span class="bold ${aP>0?'a':'muted'}">¥${f2(aP)}</span></div></div>`;
+  }
+  document.getElementById('cust-det-body').innerHTML=h;
+}
+
+// SALE MODAL
+function openSaleM(saleId,custId){
+  eSA=saleId||null;
+  saleCustId=custId||(saleId?DB.sa.find(x=>x.id===saleId)?.custId:null);
+  const c=DB.cu.find(x=>x.id===saleCustId);
+  document.getElementById('sale-cn').textContent=c?c.name:'';
+  if(saleId){const r=DB.sa.find(x=>x.id===saleId);
+    document.getElementById('sale-title').textContent='编辑出货';
+    document.getElementById('sale-date').value=r.date;document.getElementById('sale-type').value=r.type||'边肉';
+    document.getElementById('sale-cnt').value=r.count||'';document.getElementById('sale-wt').value=r.weight||'';
+    document.getElementById('sale-pr').value=r.price||'';document.getElementById('sale-proc').value=r.proc||'';
+    document.getElementById('sale-waste').value=r.waste||'';document.getElementById('sale-st').value=r.status||'paid';
+    document.getElementById('sale-note').value=r.note||'';document.getElementById('sale-del').style.display='block';
+  }else{document.getElementById('sale-title').textContent='新增出货';
+    document.getElementById('sale-date').value=tod();document.getElementById('sale-type').value='边肉';
+    ['sale-cnt','sale-wt','sale-pr','sale-proc','sale-waste','sale-note'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('sale-st').value='paid';document.getElementById('sale-del').style.display='none';
+  }
+  calcSale();openM('m-sale');
+}
+function calcSale(){
+  const w=parseFloat(document.getElementById('sale-wt').value)||0;
+  const p=parseFloat(document.getElementById('sale-pr').value)||0;
+  const proc=parseFloat(document.getElementById('sale-proc').value)||0;
+  const waste=parseFloat(document.getElementById('sale-waste').value)||0;
+  const net=w-waste;const amt=net*p+proc;
+  document.getElementById('sale-prev').innerHTML=`
+    <div class="cr"><span>有效重量（${w}−${waste}废）</span><span>${fN(net,2)}斤</span></div>
+    <div class="cr"><span>货款（${fN(net,2)}斤×¥${p}）</span><span>¥${f2(net*p)}</span></div>
+    ${proc>0?`<div class="cr"><span>加工费</span><span>¥${f2(proc)}</span></div>`:''}
+    <div class="dvd"></div>
+    <div class="cr"><span>应收金额</span><span class="cbig">¥${f2(amt)}</span></div>`;
+}
+function saveSale(){
+  const date=document.getElementById('sale-date').value;
+  const type=document.getElementById('sale-type').value;
+  const count=parseFloat(document.getElementById('sale-cnt').value)||0;
+  const weight=parseFloat(document.getElementById('sale-wt').value)||0;
+  const price=parseFloat(document.getElementById('sale-pr').value)||0;
+  const proc=parseFloat(document.getElementById('sale-proc').value)||0;
+  const waste=parseFloat(document.getElementById('sale-waste').value)||0;
+  const status=document.getElementById('sale-st').value;
+  const note=document.getElementById('sale-note').value.trim();
+  if(!date||!weight){alert('请填写日期和重量');return;}
+  const net=weight-waste;const amount=net*price+proc;
+  const rec={id:eSA||uid(),custId:saleCustId,date,type,count,weight,price,proc,waste,amount,status,note};
+  if(eSA){DB.sa[DB.sa.findIndex(x=>x.id===eSA)]=rec;}else DB.sa.push(rec);
+  save();closeM('m-sale');
+  if(curCustId)renderDet();renderCL();renderDB();
+}
+function delSale(){if(!confirm('确认删除？'))return;DB.sa=DB.sa.filter(x=>x.id!==eSA);
+  save();closeM('m-sale');if(curCustId)renderDet();renderCL();renderDB();
+}
+
+// EXPENSES
+const EICO={'运费':'🚛','工资':'👷','水电':'💡','饲料':'🌾','维修':'🔧','餐饮':'🍜','其他':'📦'};
+const EBG={'运费':'#e8f1fb','工资':'#eaf3de','水电':'#faeeda','饲料':'#eaf4ef','维修':'#fdecea','餐饮':'#fbeaf0','其他':'#f5f5f0'};
+function renderExp(){
+  const list=DB.ex.filter(inM).sort((a,b)=>b.date.localeCompare(a.date));
+  let h='';
+  if(!list.length){h=`<div class="empty"><div class="ei">💸</div><div class="et">本月暂无花销记录<br>点右上角新增</div></div>`;}
+  else{const tot=list.reduce((s,r)=>s+(+r.amount||0),0);
+    h+=`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)"><span class="bold">本月花销合计</span><span class="bold r">¥${f2(tot)}</span></div>`;
+    for(const r of list)h+=`<div class="exprow" onclick="openEM('${r.id}')">
+      <div class="expl"><div class="expico" style="background:${EBG[r.cat]||'#f5f5f0'}">${EICO[r.cat]||'📦'}</div>
+        <div><div class="expname">${r.desc||r.cat}</div><div class="expmeta">${r.cat}·${r.date}</div></div></div>
+      <div class="expamt">−¥${f2(r.amount)}</div></div>`;
+    h+=`</div>`;
+  }
+  document.getElementById('exp-body').innerHTML=h;
+}
+function openEM(id){
+  eEX=id||null;
+  if(id){const r=DB.ex.find(x=>x.id===id);
+    document.getElementById('exp-title').textContent='编辑花销';
+    document.getElementById('e-date').value=r.date;document.getElementById('e-cat').value=r.cat;
+    document.getElementById('e-desc').value=r.desc||'';document.getElementById('e-amt').value=r.amount;
+    document.getElementById('e-del').style.display='block';
+  }else{document.getElementById('exp-title').textContent='新增花销';
+    document.getElementById('e-date').value=tod();document.getElementById('e-cat').value='运费';
+    document.getElementById('e-desc').value='';document.getElementById('e-amt').value='';
+    document.getElementById('e-del').style.display='none';
+  }
+  openM('m-exp');
+}
+function saveExp(){
+  const date=document.getElementById('e-date').value;
+  const cat=document.getElementById('e-cat').value;
+  const desc=document.getElementById('e-desc').value.trim();
+  const amount=parseFloat(document.getElementById('e-amt').value)||0;
+  if(!date||!amount){alert('请填写日期和金额');return;}
+  const rec={id:eEX||uid(),date,cat,desc,amount};
+  if(eEX){DB.ex[DB.ex.findIndex(x=>x.id===eEX)]=rec;}else DB.ex.push(rec);
+  save();closeM('m-exp');renderExp();renderDB();
+}
+function delExp(){if(!confirm('确认删除？'))return;DB.ex=DB.ex.filter(x=>x.id!==eEX);save();closeM('m-exp');renderExp();renderDB();}
+
+// EXPORT
+function renderExport(){
+  const m=ms();
+  document.getElementById('exp-month-lbl').textContent=curM.getFullYear()+'年'+(curM.getMonth()+1)+'月';
+  updateBackupStatus();
+  let h='';
+  for(const c of DB.cu){if(DB.sa.some(s=>s.custId===c.id&&s.date.startsWith(m))){
+    h+=`<div class="exp-row-dl" style="border-top:1px solid var(--border)"><div class="exp-row-info"><div class="title">👤 ${c.name}</div><div class="sub">本月出货明细</div></div>
+      <button class="btn exp-dl" onclick="exportCust('${c.id}')">下载</button></div>`;
+  }}
+  document.getElementById('exp-per-cust').innerHTML=h;
+}
+
+// ============================================================
+// XLSX EXPORT  (SheetJS)
+// ============================================================
+
+/* Helper: parse "YYYY-MM-DD" → JS Date (local time) */
+function parseDate(s){
+  if(!s)return null;
+  const [y,m,d]=s.split('-').map(Number);
+  return new Date(y,m-1,d);
+}
+
+/* Build a styled header row object for aoa_to_sheet */
+function makeHeaderStyle(bg,fg){
+  return {
+    font:{name:'Arial',sz:10,bold:true,color:{rgb:fg||'FFFFFF'}},
+    fill:{fgColor:{rgb:bg||'2D7A4F'},patternType:'solid'},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},
+            left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}}
+  };
+}
+function makeDataStyle(alt,numFmt){
+  return {
+    font:{name:'Arial',sz:10},
+    fill:{fgColor:{rgb:alt?'F3FAF6':'FFFFFF'},patternType:'solid'},
+    alignment:{horizontal:'center',vertical:'center'},
+    border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},
+            left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}},
+    numFmt:numFmt||null
+  };
+}
+function makeSumStyle(numFmt){
+  return {
+    font:{name:'Arial',sz:10,bold:true,color:{rgb:'FFFFFF'}},
+    fill:{fgColor:{rgb:'2D7A4F'},patternType:'solid'},
+    alignment:{horizontal:'center',vertical:'center'},
+    border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},
+            left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}},
+    numFmt:numFmt||null
+  };
+}
+function makeTitleStyle(){
+  return {
+    font:{name:'Arial',sz:13,bold:true,color:{rgb:'FFFFFF'}},
+    fill:{fgColor:{rgb:'1A4F30'},patternType:'solid'},
+    alignment:{horizontal:'center',vertical:'center'},
+    border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},
+            left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}}
+  };
+}
+
+/* Write a styled cell at (r,c) zero-indexed into ws */
+function setCell(ws,r,c,v,style,type){
+  const addr=XLSX.utils.encode_cell({r,c});
+  ws[addr]={v:v,t:type||'s',s:style};
+  if(type==='n'&&style&&style.numFmt) ws[addr].z=style.numFmt;
+  if(v instanceof Date){ws[addr].t='d';ws[addr].v=v;}
+}
+
+/* Apply col widths */
+function setCols(ws,widths){
+  ws['!cols']=widths.map(w=>({wch:w}));
+}
+
+/* Apply row heights (array of {hpt}) */
+function setRows(ws,heights){
+  ws['!rows']=heights.map(h=>({hpt:h||15}));
+}
+
+/* Merge range: rows/cols zero-indexed */
+function addMerge(ws,r1,c1,r2,c2){
+  if(!ws['!merges'])ws['!merges']=[];
+  ws['!merges'].push({s:{r:r1,c:c1},e:{r:r2,c:c2}});
+}
+
+/* Download the workbook */
+function downloadXlsx(wb,filename){
+  XLSX.writeFile(wb,filename,{bookType:'xlsx',type:'binary',cellStyles:true});
+}
+
+/* ── Sheet builder: 宰猪记录 ─────────────────────────────── */
+function buildSlaughterSheet(slRows, monthLabel){
+  const ws={};
+  const HDRS=['日期','头数','生猪重量(斤)','边肉重量(斤)','成数%','单价(元/斤)',
+              '进猪成本(元)','出肉收入(元)','利润(元)','备注'];
+  const WIDTHS=[14,8,14,14,10,12,16,16,14,20];
+  const ncols=HDRS.length;
+
+  // row 0: title
+  const titleStyle=makeTitleStyle();
+  for(let c=0;c<ncols;c++) setCell(ws,0,c,c===0?('宰猪记录 · '+monthLabel):'',titleStyle);
+  addMerge(ws,0,0,0,ncols-1);
+
+  // row 1: headers
+  const hs=makeHeaderStyle('2D7A4F','FFFFFF');
+  HDRS.forEach((h,c)=>setCell(ws,1,c,h,hs));
+
+  // data rows
+  const numFmts=['yyyy/m/d',null,'#,##0.0','#,##0.0','0.00%','#,##0.00','#,##0.00','#,##0.00','#,##0.00',null];
+  slRows.forEach((r,i)=>{
+    const alt=(i%2===0);
+    const date=parseDate(r.date);
+    const ratio=r.live>0?(+r.meat/+r.live):0;
+    const vals=[date,+r.count,+r.live,+r.meat,ratio,+r.price,+r.cost,+r.revenue,+r.profit,r.note||''];
+    const types=['d','n','n','n','n','n','n','n','n','s'];
+    const row=2+i;
+    vals.forEach((v,c)=>{
+      const s=makeDataStyle(alt,numFmts[c]);
+      setCell(ws,row,c,v,s,types[c]);
+    });
+    // profit color
+    const profitAddr=XLSX.utils.encode_cell({r:row,c:8});
+    if(ws[profitAddr]){
+      ws[profitAddr].s={...ws[profitAddr].s,
+        font:{name:'Arial',sz:10,bold:true,
+          color:{rgb:r.profit<0?'C0392B':'2D7A4F'}}};
+    }
+  });
+
+  // sum row
+  const sumR=2+slRows.length;
+  const sumCols=[1,2,3,6,7,8]; // 0-indexed: 头数,生猪,边肉,成本,收入,利润
+  for(let c=0;c<ncols;c++){
+    const s=makeSumStyle(numFmts[c]);
+    if(c===0){setCell(ws,sumR,c,'合计',s,'s');}
+    else if(sumCols.includes(c)){
+      const letter=XLSX.utils.encode_col(c);
+      const formula=`SUM(${letter}3:${letter}${sumR})`;
+      ws[XLSX.utils.encode_cell({r:sumR,c})]={f:formula,t:'n',s,z:numFmts[c]||'#,##0.00'};
+    } else {
+      setCell(ws,sumR,c,'',s,'s');
+    }
+  }
+
+  ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:sumR,c:ncols-1}});
+  setCols(ws,WIDTHS);
+  setRows(ws,[{hpt:28},{hpt:24},...slRows.map(()=>({hpt:20})),{hpt:22}]);
+  return ws;
+}
+
+/* ── Sheet builder: 客户出货 ─────────────────────────────── */
+function buildSalesSheet(saRows, custMap, monthLabel, title){
+  const ws={};
+  const HDRS=['日期','客户','品名','头数','重量(斤)','单价(元/斤)',
+              '减废肉(斤)','加工费(元)','应收金额(元)','结款状态','备注'];
+  const WIDTHS=[14,12,8,8,12,12,12,12,16,10,20];
+  const ncols=HDRS.length;
+  const numFmts=['yyyy/m/d',null,null,null,'#,##0.0','#,##0.00','#,##0.0','#,##0.00','#,##0.00',null,null];
+
+  const titleStyle=makeTitleStyle();
+  for(let c=0;c<ncols;c++) setCell(ws,0,c,c===0?(title||'客户出货 · '+monthLabel):'',titleStyle);
+  addMerge(ws,0,0,0,ncols-1);
+
+  const hs=makeHeaderStyle('2D7A4F','FFFFFF');
+  HDRS.forEach((h,c)=>setCell(ws,1,c,h,hs));
+
+  const types=['d','s','s','n','n','n','n','n','n','s','s'];
+  saRows.forEach((r,i)=>{
+    const alt=(i%2===0);
+    const cname=custMap[r.custId]||'';
+    const vals=[parseDate(r.date),cname,r.type||'边肉',+r.count||0,+r.weight,+r.price,
+                +r.waste||0,+r.proc||0,+r.amount,r.status==='paid'?'已结清':'未结清',r.note||''];
+    const row=2+i;
+    vals.forEach((v,c)=>{
+      const s=makeDataStyle(alt,numFmts[c]);
+      setCell(ws,row,c,v,s,types[c]);
+    });
+    // status coloring
+    const sc=XLSX.utils.encode_cell({r:row,c:9});
+    if(ws[sc]){
+      const isPaid=r.status==='paid';
+      ws[sc].s={...ws[sc].s,
+        fill:{fgColor:{rgb:isPaid?'E8F5E9':'FFF8E1'},patternType:'solid'},
+        font:{name:'Arial',sz:10,bold:true,color:{rgb:isPaid?'2E7D32':'E65100'}}};
+    }
+  });
+
+  const sumR=2+saRows.length;
+  const sumCols=[4,6,7,8];
+  for(let c=0;c<ncols;c++){
+    const s=makeSumStyle(numFmts[c]);
+    if(c===0){setCell(ws,sumR,c,'合计',s,'s');}
+    else if(sumCols.includes(c)){
+      const letter=XLSX.utils.encode_col(c);
+      ws[XLSX.utils.encode_cell({r:sumR,c})]={f:`SUM(${letter}3:${letter}${sumR})`,t:'n',s,z:numFmts[c]||'#,##0.00'};
+    } else {
+      setCell(ws,sumR,c,'',s,'s');
+    }
+  }
+
+  ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:sumR,c:ncols-1}});
+  setCols(ws,WIDTHS);
+  setRows(ws,[{hpt:28},{hpt:24},...saRows.map(()=>({hpt:20})),{hpt:22}]);
+  return ws;
+}
+
+/* ── Sheet builder: 日常花销 ─────────────────────────────── */
+function buildExpensesSheet(exRows, monthLabel){
+  const ws={};
+  const HDRS=['日期','类别','描述','金额(元)'];
+  const WIDTHS=[14,12,30,14];
+  const ncols=4;
+  const numFmts=['yyyy/m/d',null,null,'#,##0.00'];
+
+  const titleStyle=makeTitleStyle();
+  for(let c=0;c<ncols;c++) setCell(ws,0,c,c===0?('日常花销 · '+monthLabel):'',titleStyle);
+  addMerge(ws,0,0,0,ncols-1);
+
+  const hs=makeHeaderStyle('2D7A4F','FFFFFF');
+  HDRS.forEach((h,c)=>setCell(ws,1,c,h,hs));
+
+  const types=['d','s','s','n'];
+  exRows.forEach((r,i)=>{
+    const alt=(i%2===0);
+    const vals=[parseDate(r.date),r.cat,r.desc||'',+r.amount];
+    const row=2+i;
+    vals.forEach((v,c)=>{
+      setCell(ws,row,c,v,makeDataStyle(alt,numFmts[c]),types[c]);
+    });
+    // Amount in red
+    const ac=XLSX.utils.encode_cell({r:row,c:3});
+    if(ws[ac]) ws[ac].s={...ws[ac].s,font:{name:'Arial',sz:10,color:{rgb:'C0392B'}}};
+  });
+
+  const sumR=2+exRows.length;
+  for(let c=0;c<ncols;c++){
+    const s=makeSumStyle(numFmts[c]);
+    if(c===0) setCell(ws,sumR,c,'合计',s,'s');
+    else if(c===3){
+      ws[XLSX.utils.encode_cell({r:sumR,c})]={f:`SUM(D3:D${sumR})`,t:'n',s,z:'#,##0.00'};
+    } else setCell(ws,sumR,c,'',s,'s');
+  }
+
+  ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:sumR,c:ncols-1}});
+  setCols(ws,WIDTHS);
+  setRows(ws,[{hpt:28},{hpt:24},...exRows.map(()=>({hpt:20})),{hpt:22}]);
+  return ws;
+}
+
+/* ── Public export functions ──────────────────────────────── */
+function monthLabel(){return curM.getFullYear()+'年'+(curM.getMonth()+1)+'月';}
+
+function buildCustMap(){
+  const m={};DB.cu.forEach(c=>m[c.id]=c.name);return m;
+}
+
+function exportSlaughter(){
+  const sl=DB.sl.filter(r=>r.date.startsWith(ms())).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!sl.length){alert('本月没有宰猪记录');return;}
+  const wb={SheetNames:['宰猪记录'],Sheets:{}};
+  wb.Sheets['宰猪记录']=buildSlaughterSheet(sl,monthLabel());
+  downloadXlsx(wb,'宰猪记录_'+ms()+'.xlsx');
+}
+
+function exportAllSales(){
+  const sa=DB.sa.filter(r=>r.date.startsWith(ms())).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!sa.length){alert('本月没有出货记录');return;}
+  const wb={SheetNames:['客户出货汇总'],Sheets:{}};
+  wb.Sheets['客户出货汇总']=buildSalesSheet(sa,buildCustMap(),monthLabel(),'客户出货汇总 · '+monthLabel());
+  downloadXlsx(wb,'客户出货汇总_'+ms()+'.xlsx');
+}
+
+function exportCust(cid){
+  const c=DB.cu.find(x=>x.id===cid);
+  const sa=DB.sa.filter(r=>r.custId===cid&&r.date.startsWith(ms())).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!sa.length){alert('本月没有该客户的出货记录');return;}
+  const wb={SheetNames:[c?c.name:'客户'],Sheets:{}};
+  const shName=c?c.name.slice(0,31):'客户';
+  wb.Sheets[shName]=buildSalesSheet(sa,buildCustMap(),monthLabel(),(c?c.name:'客户')+'出货明细 · '+monthLabel());
+  downloadXlsx(wb,(c?c.name:'客户')+'出货_'+ms()+'.xlsx');
+}
+
+function exportExpenses(){
+  const ex=DB.ex.filter(r=>r.date.startsWith(ms())).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!ex.length){alert('本月没有花销记录');return;}
+  const wb={SheetNames:['日常花销'],Sheets:{}};
+  wb.Sheets['日常花销']=buildExpensesSheet(ex,monthLabel());
+  downloadXlsx(wb,'日常花销_'+ms()+'.xlsx');
+}
+
+function exportAll(){
+  const sl=DB.sl.sort((a,b)=>a.date.localeCompare(b.date));
+  const sa=DB.sa.sort((a,b)=>a.date.localeCompare(b.date));
+  const ex=DB.ex.sort((a,b)=>a.date.localeCompare(b.date));
+  const custMap=buildCustMap();
+  const wb={SheetNames:['宰猪记录','客户出货汇总','日常花销'],Sheets:{}};
+  wb.Sheets['宰猪记录']=buildSlaughterSheet(sl,'全部数据');
+  wb.Sheets['客户出货汇总']=buildSalesSheet(sa,custMap,'全部数据','客户出货汇总 · 全部数据');
+  wb.Sheets['日常花销']=buildExpensesSheet(ex,'全部数据');
+  // Per-customer sheets
+  DB.cu.forEach(c=>{
+    const csa=sa.filter(r=>r.custId===c.id);
+    if(csa.length){
+      const shName=c.name.slice(0,28)+'出货';
+      wb.SheetNames.push(shName);
+      wb.Sheets[shName]=buildSalesSheet(csa,custMap,'全部数据',c.name+'出货明细（全部）');
+    }
+  });
+  downloadXlsx(wb,'毛猪记账本_全部数据.xlsx');
+}
+
+
+// ============================================================
+// BACKUP & RESTORE
+// ============================================================
+const BACKUP_KEY = 'pig_last_backup';
+
+function updateBackupStatus() {
+  const last = localStorage.getItem(BACKUP_KEY);
+  const el = document.getElementById('backup-status');
+  if (!el) return;
+  if (!last) {
+    el.innerHTML = '<span style="color:var(--red);font-weight:600">⚠ 从未备份过！建议立即备份。</span>';
+  } else {
+    const d = Math.floor((Date.now() - parseInt(last)) / 86400000);
+    const dt = new Date(parseInt(last));
+    const ds = dt.getFullYear()+'年'+(dt.getMonth()+1)+'月'+dt.getDate()+'日 '+
+               String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+    if (d === 0) {
+      el.innerHTML = `<span style="color:var(--green);font-weight:600">✓ 今天已备份（${ds}）</span>`;
+    } else {
+      const color = d >= 3 ? 'var(--red)' : 'var(--amber)';
+      el.innerHTML = `<span style="color:${color};font-weight:600">上次备份：${ds}（${d}天前）</span>`;
+    }
+  }
+}
+
+function backupData() {
+  const total = DB.sl.length + DB.sa.length + DB.ex.length + DB.cu.length;
+  if (total === 0) { alert('还没有任何数据可以备份'); return; }
+  const backup = {
+    version: 3,
+    exportTime: new Date().toISOString(),
+    exportTimeLabel: new Date().toLocaleString('zh-CN'),
+    stats: {
+      slaughterCount: DB.sl.length,
+      customerCount: DB.cu.length,
+      salesCount: DB.sa.length,
+      expenseCount: DB.ex.length,
+    },
+    data: DB
+  };
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const now = new Date();
+  const fname = '毛猪记账备份_' +
+    now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) +
+    '_' + ('0'+now.getHours()).slice(-2) + ('0'+now.getMinutes()).slice(-2) + '.json';
+  a.href = url; a.download = fname; a.click();
+  URL.revokeObjectURL(url);
+  localStorage.setItem(BACKUP_KEY, Date.now().toString());
+  updateBackupStatus();
+}
+
+let pendingRestoreData = null;
+
+function restoreData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = ''; // reset so same file can be selected again
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if (!backup.data || !backup.version) throw new Error('文件格式不正确');
+      const d = backup.data;
+      if (!Array.isArray(d.sl) || !Array.isArray(d.cu) || !Array.isArray(d.sa) || !Array.isArray(d.ex)) {
+        throw new Error('备份文件数据结构不完整');
+      }
+      pendingRestoreData = d;
+      const infoEl = document.getElementById('restore-info');
+      infoEl.innerHTML =
+        `<strong>备份文件信息：</strong><br>` +
+        `备份时间：${backup.exportTimeLabel || backup.exportTime}<br>` +
+        `宰猪记录：${d.sl.length} 条<br>` +
+        `客户档案：${d.cu.length} 个<br>` +
+        `出货记录：${d.sa.length} 条<br>` +
+        `花销记录：${d.ex.length} 条`;
+      openM('m-restore');
+    } catch(err) {
+      alert('读取备份文件失败：' + err.message + ' 请确认选择的是正确的备份文件(.json)');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function confirmRestore() {
+  if (!pendingRestoreData) return;
+  DB = pendingRestoreData;
+  save();
+  pendingRestoreData = null;
+  closeM('m-restore');
+  renderAll();
+  alert('✓ 数据恢复成功！共恢复 ' + (DB.sl.length + DB.sa.length + DB.ex.length) + ' 条记录。');
+}
+
+function checkBackupReminder() {
+  const last = localStorage.getItem(BACKUP_KEY);
+  const total = DB.sl.length + DB.sa.length + DB.ex.length;
+  if (total === 0) return; // no data yet, no reminder
+  if (!last) {
+    // Never backed up and has data — remind after 1 minute
+    setTimeout(() => {
+      openM('m-backup');
+      document.getElementById('days-since-backup').textContent = '从未';
+    }, 60000);
+    return;
+  }
+  const daysSince = Math.floor((Date.now() - parseInt(last)) / 86400000);
+  if (daysSince >= 3) {
+    setTimeout(() => {
+      openM('m-backup');
+      document.getElementById('days-since-backup').textContent = daysSince + '天';
+    }, 3000);
+  }
+}
+
+// CLOSE ON OVERLAY CLICK
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden');}));
+
+// SEED DATA
+if(!DB.sl.length){
+  [{live:1855,meat:1519.9,price:5.85,count:8,revenue:11402,date:'2026-06-30'},{live:1905,meat:1513.8,price:6,count:8,revenue:11946.2,date:'2026-07-01'},{live:2044,meat:1694,price:6.1,count:9,revenue:13756.72,date:'2026-07-02'},{live:4834,meat:3922.7,price:6.1,count:20,revenue:32602.06,date:'2026-07-03'},{live:755,meat:629.6,price:6.1,count:3,revenue:4895.56,date:'2026-07-05'},{live:2080,meat:1702.74,price:6.3,count:9,revenue:14355.81,date:'2026-07-06'}]
+  .forEach(r=>{const cost=r.live*r.price;DB.sl.push({id:uid(),note:'',...r,cost,profit:r.revenue-cost});});
+  const cid=uid();
+  DB.cu.push({id:cid,name:'建文爸',alias:'李建文的爸爸',phone:''});
+  DB.sa.push({id:uid(),custId:cid,date:'2026-07-25',type:'边肉',count:0.5,weight:85.4,price:8,proc:0,waste:0,amount:683.2,status:'paid',note:'承接7月份'});
+  DB.sa.push({id:uid(),custId:cid,date:'2026-07-26',type:'边肉',count:0.5,weight:98.6,price:8,proc:0,waste:0,amount:788.8,status:'paid',note:''});
+  save();
+}
+
+updateLabels();renderAll();checkBackupReminder();
+
+// Show iOS install hint if running in browser (not standalone) on mobile
+(function(){
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  if (isMobile && !isStandalone) {
+    const el = document.getElementById('ios-install-hint');
+    if (el) el.style.display = 'block';
+  }
+})();
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW failed:', err));
+  });
+}
+</script>
+</body>
+</html>
